@@ -23,17 +23,36 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
+let original_url;
 app.post('/api/shorturl', function(req, res) {
   const requestBody = req.body.url;
   const url = new URL(requestBody);
+  original_url = url.href;
   dns.lookup(url.hostname, (err, address, family) => {
     if (err) {
       res.json({ error: 'invalid url' });
     } else {
-      res.json({ original_url: url.href, short_url: 1 });
+      res.json({ original_url: original_url, short_url: 1 });
     }
+
+    //When you visit /api/shorturl/<short_url>, you will be redirected to the original URL.
+    
+  
+  
   });
 });
+
+
+
+app.get('/api/shorturl/:short_url', function(req, res) {
+  const shortUrl = req.params.short_url;
+
+res.redirect(original_url);
+
+
+});
+
+
 
 
 
